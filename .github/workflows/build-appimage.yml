@@ -3,20 +3,37 @@ name: Build AppImage
 on:
   workflow_dispatch:
   push:
+    paths:
+      - 'manwa_manager/**'
+      - '.github/workflows/build-appimage.yml'
     tags:
       - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: manwa_manager
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: manwa_manager/requirements.txt
 
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3 python3-pip python3-tk wget fuse libfuse2
+          sudo apt-get install -y python3-tk wget fuse libfuse2 desktop-file-utils file
 
       - name: Install Python dependencies
         run: |
@@ -30,8 +47,11 @@ jobs:
           pyinstaller --clean --noconfirm ManwaManager.spec
           cp -a dist/ManwaManager AppDir/usr/bin/ManwaManager
           cp index.html AppDir/usr/bin/index.html
-                    cp ManwaManager.desktop AppDir/usr/share/applications/
-          cp assets/manwamanager.svg AppDir/usr/share/icons/hicolor/scalable/apps/
+          cp ManwaManager.desktop AppDir/ManwaManager.desktop
+          cp ManwaManager.desktop AppDir/usr/share/applications/ManwaManager.desktop
+          cp assets/manwamanager.svg AppDir/manwamanager.svg
+          cp assets/manwamanager.svg AppDir/.DirIcon
+          cp assets/manwamanager.svg AppDir/usr/share/icons/hicolor/scalable/apps/manwamanager.svg
           cp scripts/AppRun AppDir/AppRun
           chmod +x AppDir/AppRun
 
@@ -42,16 +62,17 @@ jobs:
 
       - name: Create AppImage
         run: |
-          ARCH=x86_64 ./appimagetool AppDir ManwaManager-x86_64.AppImage
+          ARCH=x86_64 ./appimagetool --appimage-extract-and-run AppDir ManwaManager-x86_64.AppImage || ARCH=x86_64 ./appimagetool AppDir ManwaManager-x86_64.AppImage
 
-      - name: Upload AppImage
+      - name: Upload AppImage artifact
         uses: actions/upload-artifact@v4
         with:
           name: ManwaManager-x86_64-AppImage
-          path: ManwaManager-x86_64.AppImage
+          path: manwa_manager/ManwaManager-x86_64.AppImage
+          if-no-files-found: error
 
       - name: Create release asset for tags
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: ManwaManager-x86_64.AppImage
+          files: manwa_manager/ManwaManager-x86_64.AppImage

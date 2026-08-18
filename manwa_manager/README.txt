@@ -30,12 +30,16 @@ Open the forwarded "Manwa Manager" port from the Ports panel.
 LIBRARY
 -------
 
-All downloads stay inside:
+Settings and chosen library folder location are stored in:
 
-    manwa_manager/manwa/
+    ~/.config/ManwaManager/config.json
 
-The path is relative to the application, so you can move the entire
-manwa_manager folder anywhere.
+Default library folder:
+
+    ~/Manwa Library
+
+You can change the library folder at any time from the Web UI.
+The library is stored outside the application and outside the AppImage.
 
 
 DOWNLOAD SAFETY / ORGANIZATION
@@ -52,6 +56,11 @@ DOWNLOAD SAFETY / ORGANIZATION
 
 APPIMAGE
 ---------
-The repository includes an AppImage build workflow. Push the repository to GitHub and run the "Build AppImage" workflow. It produces a Linux x86_64 AppImage.
+The repository includes an AppImage build workflow (.github/workflows/build-appimage.yml).
+Push the repository to GitHub and run the "Build AppImage" workflow. It produces a Linux x86_64 AppImage.
 
-The AppImage stores its settings in ~/.config/ManwaManager/config.json and asks the user to choose a library folder on first launch. The library is not stored inside the AppImage.
+You can also build locally using:
+
+    ./build-appimage.sh
+
+The AppImage stores its settings in ~/.config/ManwaManager/config.json and allows choosing/changing a library folder from the UI. The library is not stored inside the AppImage.

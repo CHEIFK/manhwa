@@ -1,11 +1,21 @@
 # -*- mode: python ; coding: utf-8 -*-
+import os
 from PyInstaller.utils.hooks import collect_all
 
-binaries = []
-datas = [('index.html', '.')]
-hiddenimports = ['tkinter', 'bs4', 'PIL', 'curl_cffi']
+if "SPECPATH" in globals():
+    SPEC_DIR = SPECPATH
+elif "SPEC" in globals():
+    SPEC_DIR = os.path.dirname(os.path.abspath(SPEC))
+elif "__file__" in globals():
+    SPEC_DIR = os.path.dirname(os.path.abspath(__file__))
+else:
+    SPEC_DIR = os.path.abspath(".")
 
-for pkg in ['curl_cffi', 'bs4', 'PIL']:
+binaries = []
+datas = [(os.path.join(SPEC_DIR, "index.html"), ".")]
+hiddenimports = ["tkinter", "bs4", "PIL", "curl_cffi"]
+
+for pkg in ["curl_cffi", "bs4", "PIL"]:
     try:
         b, d, h = collect_all(pkg)
         binaries += b
@@ -17,8 +27,8 @@ for pkg in ['curl_cffi', 'bs4', 'PIL']:
 block_cipher = None
 
 a = Analysis(
-    ['app.py'],
-    pathex=[],
+    [os.path.join(SPEC_DIR, "app.py")],
+    pathex=[SPEC_DIR],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
@@ -37,7 +47,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='ManwaManager',
+    name="ManwaManager",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

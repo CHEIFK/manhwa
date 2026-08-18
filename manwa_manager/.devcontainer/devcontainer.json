@@ -11,6 +11,6 @@
       "onAutoForward": "openBrowser"
     }
   },
-  "postCreateCommand": "pip install -r requirements.txt",
-  "postStartCommand": "nohup python3 app.py > /tmp/manwa-manager.log 2>&1 &"
+  "postCreateCommand": "if [ -f manwa_manager/requirements.txt ]; then pip install -r manwa_manager/requirements.txt; else pip install -r requirements.txt; fi",
+  "postStartCommand": "if [ -d manwa_manager ]; then cd manwa_manager; fi && nohup python3 app.py > /tmp/manwa-manager.log 2>&1 &"
 }

@@ -29,7 +29,15 @@ from bs4 import BeautifulSoup
 from PIL import Image
 
 
-WEB = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
+if getattr(sys, "frozen", False):
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass and (Path(meipass) / "index.html").exists():
+        WEB = Path(meipass)
+    else:
+        WEB = Path(sys.executable).resolve().parent
+else:
+    WEB = Path(__file__).resolve().parent
+
 CONFIG_DIR = Path.home() / ".config" / "ManwaManager"
 CONFIG_PATH = CONFIG_DIR / "config.json"
 ROOT = None

@@ -1,0 +1,26 @@
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# PyInstaller & AppImage build artifacts
+build/
+dist/
+AppDir/
+*.spec.bak
+*.AppImage
+appimagetool
+
+# Local downloads and reports
+manwa/
+download_report.txt
+
+# System / Editor files
+.DS_Store
+Thumbs.db
+.vscode/

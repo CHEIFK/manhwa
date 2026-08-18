@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Manwa Manager
-Comment=Local manhwa and manga library manager
-Exec=ManwaManager
-Icon=manwamanager
-Type=Application
-Categories=Utility;Network;
-Terminal=false
