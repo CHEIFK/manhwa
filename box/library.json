@@ -1,0 +1,65 @@
+{
+  "manga": [
+    {
+      "name": "Anonymous-7",
+      "folder": "Anonymous-7",
+      "chapters": [
+        {
+          "name": "Chapter-00 — Prologue",
+          "folder": "Chapter-00",
+          "pages": 8
+        },
+        {
+          "name": "Chapter-01",
+          "folder": "Chapter-01",
+          "pages": 52
+        },
+        {
+          "name": "Chapter-02",
+          "folder": "Chapter-02",
+          "pages": 29
+        },
+        {
+          "name": "Chapter-03",
+          "folder": "Chapter-03",
+          "pages": 30
+        },
+        {
+          "name": "Chapter-04",
+          "folder": "Chapter-04",
+          "pages": 30
+        },
+        {
+          "name": "Chapter-05",
+          "folder": "Chapter-05",
+          "pages": 31
+        },
+        {
+          "name": "Chapter-06",
+          "folder": "Chapter-06",
+          "pages": 34
+        },
+        {
+          "name": "Chapter-07",
+          "folder": "Chapter-07",
+          "pages": 36
+        },
+        {
+          "name": "Chapter-08",
+          "folder": "Chapter-08",
+          "pages": 32
+        },
+        {
+          "name": "Chapter-09",
+          "folder": "Chapter-09",
+          "pages": 32
+        },
+        {
+          "name": "Chapter-10 — The End",
+          "folder": "Chapter-10",
+          "pages": 36
+        }
+      ]
+    }
+  ]
+}
