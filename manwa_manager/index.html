@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Manwa Library</title>
+<style>
+:root{--bg:#17181c;--panel:#202228;--panel2:#292c33;--text:#f2f4f7;--muted:#9da4af;--line:#363a43;--accent:#5aa2ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+header{position:sticky;top:0;z-index:10;background:rgba(23,24,28,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.bar{max-width:1250px;margin:auto;min-height:72px;padding:12px 20px;display:flex;align-items:center;gap:14px}
+.logo{font-size:21px;font-weight:800;letter-spacing:-.03em}.path{color:var(--muted);font-size:12px;margin-top:3px}
+.spacer{flex:1}.search{width:240px;padding:10px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);outline:none}
+button{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:10px;padding:10px 13px;cursor:pointer}
+button:hover{background:var(--panel2)}
+main{max-width:1250px;margin:auto;padding:28px 20px 60px}
+h1{font-size:26px;margin:0 0 7px;letter-spacing:-.03em}.hint{color:var(--muted);margin-bottom:24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;cursor:pointer;transition:.15s}
+.card:hover{transform:translateY(-2px);background:var(--panel2);border-color:#4a505b}
+.icon{font-size:42px;margin-bottom:15px}.title{font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{color:var(--muted);margin-top:7px;font-size:12px}
+.empty{padding:60px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px}
+#reader{display:none}.readerTop{display:flex;align-items:center;gap:12px;margin-bottom:18px}.readerTitle{font-size:22px;font-weight:800}
+.page{display:block;width:min(100%,1000px);height:auto;margin:0 auto 12px;background:#111;box-shadow:0 5px 24px #0006}
+select{padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--text)}
+.zoomControls{display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
+.zoomControls button{border:0;background:transparent;padding:6px 10px;border-radius:7px;font-size:18px;line-height:1}
+.zoomControls button:hover{background:var(--panel2)}
+#zoomValue{min-width:48px;text-align:center;color:var(--muted);font-size:12px}
+.chapterNav{display:flex;justify-content:center;gap:10px;max-width:1000px;margin:26px auto 10px}
+.chapterNav button{min-width:150px;padding:12px 18px;font-weight:650}
+.chapterNav .next{background:var(--panel2)}
+.progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);width:0;z-index:30}
+@media(max-width:700px){.search{width:150px}.bar{padding:10px 12px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}main{padding:20px 12px}.zoomControls{order:5}.readerTop{flex-wrap:wrap}.readerTitle{max-width:45vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chapterNav{padding:0 8px}.chapterNav button{min-width:0;flex:1}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<header><div class="bar">
+  <div><div class="logo">📚 Manwa Library</div><div class="path" id="path">Loading library…</div></div>
+  <div class="spacer"></div>
+  <input class="search" id="search" placeholder="Search folders…" autocomplete="off">
+  <button id="addDownload">＋ Download</button><button id="settings">⚙ Library</button><button id="refresh">↻ Refresh</button>
+</div></header>
+
+<main>
+<section id="settingsPanel" style="display:none;margin:0 0 24px;padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:14px">
+  <div style="font-size:18px;font-weight:800;margin-bottom:12px">Library Location</div>
+  <div id="libraryPath" style="color:var(--muted);word-break:break-all;margin-bottom:12px"></div>
+  <button id="changeFolder">Change Folder</button>
+  <button id="closeSettings">Close</button>
+</section>
+<section id="library">
+<div id="downloadPanel" style="display:none;margin:0 0 24px;padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:14px">
+  <div style="font-size:18px;font-weight:800;margin-bottom:12px">Download Series</div>
+  <input id="seriesUrl" placeholder="Paste series URL…" style="width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--text);outline:none;margin-bottom:10px">
+  <input id="seriesName" placeholder="Name (optional — auto-detected)" style="width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--text);outline:none;margin-bottom:10px">
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <button id="startDownload">Download</button>
+    <button id="cancelDownload">Close</button>
+    <span id="downloadStatus" style="color:var(--muted)"></span>
+  </div>
+  <div style="height:6px;background:var(--panel2);border-radius:99px;margin-top:14px;overflow:hidden">
+    <div id="downloadProgress" style="height:100%;width:0;background:var(--accent);transition:.2s"></div>
+  </div>
+</div>
+  <h1>Your Library</h1>
+  <div class="hint" id="count">Scanning…</div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<section id="reader">
+  <div class="readerTop">
+    <button id="back">← Library</button>
+    <div class="readerTitle" id="readerTitle"></div>
+    <div class="spacer"></div>
+    <div class="zoomControls" title="Reader zoom">
+      <button id="zoomOut" aria-label="Zoom out">−</button>
+      <span id="zoomValue">100%</span>
+      <button id="zoomIn" aria-label="Zoom in">+</button>
+    </div>
+    <select id="chapterSelect"></select>
+    <button id="fullscreen">⛶</button>
+  </div>
+  <div id="pages"></div>
+</section>
+</main>
+
+<script>
+let library=[], current=null;
+
+
+
+const settingsBtn = document.getElementById('settings');
+const settingsPanel = document.getElementById('settingsPanel');
+const libraryPath = document.getElementById('libraryPath');
+const changeFolder = document.getElementById('changeFolder');
+const closeSettings = document.getElementById('closeSettings');
+
+settingsBtn.onclick = async () => {
+  settingsPanel.style.display = 'block';
+  const r = await fetch('/api/settings?ts=' + Date.now(), {cache:'no-store'});
+  const d = await r.json();
+  libraryPath.textContent = d.library_path;
+};
+
+closeSettings.onclick = () => settingsPanel.style.display = 'none';
+
+changeFolder.onclick = async () => {
+  changeFolder.disabled = true;
+  libraryPath.textContent = 'Choose a folder in the file picker…';
+  try {
+    const r = await fetch('/api/library-folder', {method:'POST'});
+    const d = await r.json();
+    if (d.ok) {
+      libraryPath.textContent = d.library_path;
+      await scan();
+    } else {
+      libraryPath.textContent = d.library_path;
+    }
+  } finally {
+    changeFolder.disabled = false;
+  }
+};
+
+const addDownload = document.getElementById('addDownload');
+const downloadPanel = document.getElementById('downloadPanel');
+const startDownload = document.getElementById('startDownload');
+const cancelDownload = document.getElementById('cancelDownload');
+const seriesUrl = document.getElementById('seriesUrl');
+const seriesName = document.getElementById('seriesName');
+const downloadStatus = document.getElementById('downloadStatus');
+const downloadProgress = document.getElementById('downloadProgress');
+
+let activeJob = null;
+
+addDownload.onclick = () => {
+  downloadPanel.style.display = downloadPanel.style.display === 'none' ? 'block' : 'none';
+  seriesUrl.focus();
+};
+
+cancelDownload.onclick = () => {
+  downloadPanel.style.display = 'none';
+};
+
+startDownload.onclick = async () => {
+  const url = seriesUrl.value.trim();
+
+  if (!url) {
+    downloadStatus.textContent = 'Enter a series URL.';
+    return;
+  }
+
+  startDownload.disabled = true;
+  downloadStatus.textContent = 'Starting...';
+  downloadProgress.style.width = '0%';
+
+  try {
+    const res = await fetch('/api/download', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        url,
+        name: seriesName.value.trim()
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Could not start download.');
+
+    activeJob = data.job_id;
+    pollDownload();
+  } catch (e) {
+    downloadStatus.textContent = e.message;
+    startDownload.disabled = false;
+  }
+};
+
+async function pollDownload() {
+  if (!activeJob) return;
+
+  try {
+    const res = await fetch('/api/downloads?ts=' + Date.now(), {
+      cache: 'no-store'
+    });
+
+    const jobs = await res.json();
+    const job = jobs[activeJob];
+
+    if (!job) return;
+
+    downloadProgress.style.width = (job.progress || 0) + '%';
+    downloadStatus.textContent = job.message || job.status;
+
+    if (job.status === 'complete') {
+      startDownload.disabled = false;
+      downloadStatus.textContent = '✓ Download complete';
+      seriesUrl.value = '';
+      seriesName.value = '';
+      setTimeout(scan, 500);
+      return;
+    }
+
+    if (job.status === 'error') {
+      startDownload.disabled = false;
+      downloadStatus.textContent = '✕ ' + job.message;
+      return;
+    }
+
+    setTimeout(pollDownload, 700);
+  } catch (e) {
+    downloadStatus.textContent = 'Download status unavailable.';
+    setTimeout(pollDownload, 1500);
+  }
+}
+
+async function scan(){
+  const res=await fetch('/api/library?ts='+Date.now(),{cache:'no-store'});
+  if(!res.ok) throw new Error('Server error');
+  library=await res.json();
+  try { const s=await fetch('/api/settings?ts='+Date.now(),{cache:'no-store'}); const d=await s.json(); document.getElementById('path').textContent=d.library_path; } catch(e) {}
+  renderLibrary();
+}
+
+function renderLibrary(){
+  const q=document.getElementById('search').value.toLowerCase().trim();
+  const list=library.filter(x=>x.name.toLowerCase().includes(q));
+  document.getElementById('count').textContent=`${list.length} folder${list.length!==1?'s':''} detected · updates automatically`;
+  const grid=document.getElementById('grid'); grid.innerHTML='';
+  if(!list.length){grid.innerHTML='<div class="empty">No folders found.</div>';return}
+  list.forEach(item=>{
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`<div class="icon">📁</div><div class="title"></div><div class="meta">${item.chapters} chapter${item.chapters!==1?'s':''} · ${item.pages} pages</div>`;
+    card.querySelector('.title').textContent=item.name;
+    card.onclick=()=>openManga(item);
+    grid.appendChild(card);
+  });
+}
+
+const ZOOM_KEY='manwa-reader-zoom';
+let zoom = Number(localStorage.getItem(ZOOM_KEY)) || 100;
+zoom = Math.min(150, Math.max(50, zoom));
+
+function applyZoom(){
+  document.querySelectorAll('.page').forEach(img=>{
+    img.style.width = zoom + '%';
+    // Keep the image centered when it becomes wider than its reader area.
+    // At 140%, for example, shift it left by 20% so the extra 40%
+    // is distributed evenly on both sides.
+    img.style.marginLeft = ((100 - zoom) / 2) + '%';
+    img.style.marginRight = '0';
+  });
+  document.getElementById('zoomValue').textContent = zoom + '%';
+  localStorage.setItem(ZOOM_KEY, String(zoom));
+}
+
+document.getElementById('zoomIn').onclick=()=>{
+  zoom=Math.min(150,zoom+10);
+  applyZoom();
+};
+document.getElementById('zoomOut').onclick=()=>{
+  zoom=Math.max(50,zoom-10);
+  applyZoom();
+};
+
+applyZoom();
+
+async function openManga(item){
+  const res=await fetch('/api/manga/'+encodeURIComponent(item.name)+'?ts='+Date.now(),{cache:'no-store'});
+  current=await res.json();
+  document.getElementById('library').style.display='none';
+  document.getElementById('reader').style.display='block';
+  document.getElementById('readerTitle').textContent=current.name;
+  const sel=document.getElementById('chapterSelect'); sel.innerHTML='';
+  current.chapters.forEach((c,i)=>{let o=document.createElement('option');o.value=i;o.textContent=`${c.name} · ${c.pages} pages`;sel.appendChild(o)});
+  sel.onchange=()=>loadChapter(+sel.value);
+  loadChapter(0);
+  scrollTo(0,0);
+}
+
+function loadChapter(i){
+  const c=current.chapters[i], box=document.getElementById('pages');
+  document.getElementById('chapterSelect').value=i; box.innerHTML='';
+  c.files.forEach((file,n)=>{
+    const img=document.createElement('img');img.className='page';img.loading=n<2?'eager':'lazy';
+    img.src='/file/'+encodeURIComponent(current.name)+'/'+c.path.split('/').map(encodeURIComponent).join('/')+'/'+encodeURIComponent(file);
+    img.alt=`${c.name} page ${n+1}`; box.appendChild(img);
+  });
+
+  const nav=document.createElement('div');
+  nav.className='chapterNav';
+
+  if(i>0){
+    const prev=document.createElement('button');
+    prev.textContent='← Previous Chapter';
+    prev.onclick=()=>loadChapter(i-1);
+    nav.appendChild(prev);
+  }
+
+  if(i<current.chapters.length-1){
+    const next=document.createElement('button');
+    next.className='next';
+    next.textContent='Next Chapter →';
+    next.onclick=()=>loadChapter(i+1);
+    nav.appendChild(next);
+  }else{
+    const end=document.createElement('button');
+    end.className='next';
+    end.textContent='✓ End of Manga';
+    end.disabled=true;
+    nav.appendChild(end);
+  }
+
+  box.appendChild(nav);
+  applyZoom();
+  scrollTo({top:0,behavior:'smooth'});
+}
+
+document.getElementById('back').onclick=()=>{document.getElementById('reader').style.display='none';document.getElementById('library').style.display='block';current=null;scrollTo(0,0)};
+document.getElementById('refresh').onclick=scan;
+document.getElementById('search').oninput=renderLibrary;
+document.getElementById('fullscreen').onclick=()=>document.documentElement.requestFullscreen?.();
+window.onkeydown=e=>{
+ if(!current)return;
+ if(e.key==='Escape'){document.getElementById('back').click()}
+ if(e.key==='ArrowRight'){let s=document.getElementById('chapterSelect');if(+s.value<s.options.length-1){s.value=+s.value+1;loadChapter(+s.value)}}
+ if(e.key==='ArrowLeft'){let s=document.getElementById('chapterSelect');if(+s.value>0){s.value=+s.value-1;loadChapter(+s.value)}}
+};
+window.onscroll=()=>{let m=document.documentElement.scrollHeight-innerHeight;document.getElementById('progress').style.width=m>0?(scrollY/m*100)+'%':'0%'};
+scan().catch(e=>document.getElementById('count').textContent='Could not connect to the library server.');
+setInterval(scan,5000);
+</script>
+</body>
+</html>
