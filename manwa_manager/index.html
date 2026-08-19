@@ -5,70 +5,504 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Manwa Library</title>
 <style>
-:root{--bg:#17181c;--panel:#202228;--panel2:#292c33;--text:#f2f4f7;--muted:#9da4af;--line:#363a43;--accent:#5aa2ff}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
-header{position:sticky;top:0;z-index:10;background:rgba(23,24,28,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-.bar{max-width:1250px;margin:auto;min-height:72px;padding:12px 20px;display:flex;align-items:center;gap:14px}
-.logo{font-size:21px;font-weight:800;letter-spacing:-.03em}.path{color:var(--muted);font-size:12px;margin-top:3px}
-.spacer{flex:1}.search{width:240px;padding:10px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);outline:none}
-button{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:10px;padding:10px 13px;cursor:pointer}
-button:hover{background:var(--panel2)}
-main{max-width:1250px;margin:auto;padding:28px 20px 60px}
-h1{font-size:26px;margin:0 0 7px;letter-spacing:-.03em}.hint{color:var(--muted);margin-bottom:24px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;cursor:pointer;transition:.15s}
-.card:hover{transform:translateY(-2px);background:var(--panel2);border-color:#4a505b}
-.icon{font-size:42px;margin-bottom:15px}.title{font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{color:var(--muted);margin-top:7px;font-size:12px}
-.empty{padding:60px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px}
-#reader{display:none}.readerTop{display:flex;align-items:center;gap:12px;margin-bottom:18px}.readerTitle{font-size:22px;font-weight:800}
-.page{display:block;width:min(100%,1000px);height:auto;margin:0 auto 12px;background:#111;box-shadow:0 5px 24px #0006}
-select{padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--text)}
-.zoomControls{display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
-.zoomControls button{border:0;background:transparent;padding:6px 10px;border-radius:7px;font-size:18px;line-height:1}
-.zoomControls button:hover{background:var(--panel2)}
-#zoomValue{min-width:48px;text-align:center;color:var(--muted);font-size:12px}
-.chapterNav{display:flex;justify-content:center;gap:10px;max-width:1000px;margin:26px auto 10px}
-.chapterNav button{min-width:150px;padding:12px 18px;font-weight:650}
-.chapterNav .next{background:var(--panel2)}
-.progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);width:0;z-index:30}
-@media(max-width:700px){.search{width:150px}.bar{padding:10px 12px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}main{padding:20px 12px}.zoomControls{order:5}.readerTop{flex-wrap:wrap}.readerTitle{max-width:45vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chapterNav{padding:0 8px}.chapterNav button{min-width:0;flex:1}}
+:root {
+  --bg: #141518;
+  --panel: #1e2026;
+  --panel2: #272a33;
+  --panel3: #323642;
+  --text: #f3f5f8;
+  --muted: #9ba3af;
+  --line: #353945;
+  --accent: #4c9aff;
+  --accent-hover: #3d8bf0;
+  --success: #38cb89;
+  --danger: #ff5656;
+  --warning: #ffab00;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(20, 21, 24, 0.95);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+.bar {
+  max-width: 1250px;
+  margin: auto;
+  min-height: 70px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+.path {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.spacer { flex: 1; }
+.search {
+  width: 220px;
+  padding: 9px 13px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel);
+  color: var(--text);
+  outline: none;
+  font-size: 13px;
+  transition: border-color .15s;
+}
+.search:focus { border-color: var(--accent); }
+button {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 9px;
+  padding: 9px 14px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+button:hover { background: var(--panel2); border-color: #4b5160; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+button.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+button.primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+button.danger {
+  background: rgba(255, 86, 86, 0.12);
+  color: #ff7878;
+  border-color: rgba(255, 86, 86, 0.3);
+}
+button.danger:hover {
+  background: rgba(255, 86, 86, 0.25);
+  border-color: var(--danger);
+}
+main {
+  max-width: 1250px;
+  margin: auto;
+  padding: 28px 20px 80px;
+}
+h1 {
+  font-size: 24px;
+  margin: 0 0 6px;
+  letter-spacing: -0.03em;
+}
+.hint {
+  color: var(--muted);
+  margin-bottom: 22px;
+  font-size: 13px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+.card {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px 18px 18px;
+  cursor: pointer;
+  transition: transform .15s, border-color .15s, background .15s;
+}
+.card:hover {
+  transform: translateY(-2px);
+  background: var(--panel2);
+  border-color: #4b5160;
+}
+.cardDelete {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 6px 8px;
+  border-radius: 7px;
+  font-size: 13px;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all .15s;
+}
+.cardDelete:hover {
+  opacity: 1;
+  background: rgba(255, 86, 86, 0.2);
+  border-color: rgba(255, 86, 86, 0.6);
+  color: #ff7878;
+}
+.icon { font-size: 40px; margin-bottom: 14px; }
+.title {
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 28px;
+}
+.meta { color: var(--muted); margin-top: 6px; font-size: 12px; }
+.empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  font-size: 14px;
+}
+
+/* Settings & Panel Styles */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 26px;
+}
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.panelTitle { font-size: 18px; font-weight: 800; }
+
+.settingGroup {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.settingLabel {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.settingDesc {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.pillGroup {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pillBtn {
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.pillBtn:hover {
+  background: var(--panel3);
+  border-color: #4b5160;
+}
+.pillBtn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Download Manager Job Cards */
+.jobCard {
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.jobTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.jobName {
+  font-weight: 700;
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.jobBadge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.badge-downloading { background: rgba(76, 154, 255, 0.2); color: var(--accent); }
+.badge-starting, .badge-detecting, .badge-fetching { background: rgba(76, 154, 255, 0.2); color: var(--accent); }
+.badge-queued { background: rgba(255, 171, 0, 0.2); color: var(--warning); }
+.badge-completed { background: rgba(56, 203, 137, 0.2); color: var(--success); }
+.badge-failed { background: rgba(255, 86, 86, 0.2); color: var(--danger); }
+.badge-cancelled { background: rgba(155, 163, 175, 0.2); color: var(--muted); }
+
+.progressBarBg {
+  height: 8px;
+  background: var(--panel3);
+  border-radius: 99px;
+  overflow: hidden;
+  margin: 10px 0 10px;
+}
+.progressBar {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  transition: width .2s ease;
+}
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin: 10px 0;
+  background: var(--bg);
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+.statItem {
+  display: flex;
+  flex-direction: column;
+}
+.statLabel { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.statValue { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 2px; }
+
+.jobDetails {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 12px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Reader View */
+#reader { display: none; }
+.readerTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.readerTitle {
+  font-size: 20px;
+  font-weight: 800;
+  max-width: 40vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.page {
+  display: block;
+  width: min(100%, 980px);
+  height: auto;
+  margin: 0 auto 12px;
+  background: #111;
+  box-shadow: 0 5px 24px rgba(0, 0, 0, 0.4);
+  border-radius: 2px;
+}
+select {
+  padding: 9px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+}
+.zoomControls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 3px;
+}
+.zoomControls button {
+  border: 0;
+  background: transparent;
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 16px;
+  line-height: 1;
+}
+.zoomControls button:hover { background: var(--panel2); }
+#zoomValue {
+  min-width: 44px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+.chapterNav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  max-width: 980px;
+  margin: 26px auto 10px;
+}
+.chapterNav button { min-width: 140px; padding: 12px 18px; font-weight: 650; }
+.chapterNav .next { background: var(--panel2); }
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--accent);
+  width: 0%;
+  z-index: 30;
+  transition: width .1s linear;
+}
+
+@media(max-width: 760px) {
+  .search { width: 140px; }
+  .bar { padding: 10px 14px; gap: 8px; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  main { padding: 18px 14px; }
+  .readerTop { gap: 8px; }
+  .readerTitle { max-width: 50vw; font-size: 16px; }
+  .chapterNav button { min-width: 0; flex: 1; }
+}
 </style>
 </head>
 <body>
 <div class="progress" id="progress"></div>
+
 <header><div class="bar">
-  <div><div class="logo">📚 Manwa Library</div><div class="path" id="path">Loading library…</div></div>
+  <div>
+    <div class="logo">📚 Manwa Library</div>
+    <div class="path" id="path">Loading library…</div>
+  </div>
   <div class="spacer"></div>
-  <input class="search" id="search" placeholder="Search folders…" autocomplete="off">
-  <button id="addDownload">＋ Download</button><button id="settings">⚙ Library</button><button id="refresh">↻ Refresh</button>
+  <input class="search" id="search" placeholder="Search library…" autocomplete="off">
+  <button id="addDownload">＋ Download</button>
+  <button id="settings">⚙ Settings</button>
+  <button id="refresh">↻ Refresh</button>
 </div></header>
 
 <main>
-<section id="settingsPanel" style="display:none;margin:0 0 24px;padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:14px">
-  <div style="font-size:18px;font-weight:800;margin-bottom:12px">Library Location</div>
-  <div id="libraryPath" style="color:var(--muted);word-break:break-all;margin-bottom:12px"></div>
-  <button id="changeFolder">Change Folder</button>
-  <button id="closeSettings">Close</button>
+<!-- Settings Panel -->
+<section id="settingsPanel" class="panel" style="display:none">
+  <div class="panelHeader">
+    <div class="panelTitle">⚙ Downloader & Library Settings</div>
+    <button id="closeSettings">Close</button>
+  </div>
+
+  <div class="settingGroup">
+    <div class="settingLabel">Concurrent Download Workers</div>
+    <div class="settingDesc">Controls the maximum parallel image download threads per series (Default: 12).</div>
+    <div class="pillGroup" id="workerPills">
+      <button class="pillBtn" data-workers="4">4</button>
+      <button class="pillBtn" data-workers="8">8</button>
+      <button class="pillBtn" data-workers="12">12</button>
+      <button class="pillBtn" data-workers="16">16</button>
+      <button class="pillBtn" data-workers="20">20</button>
+      <button class="pillBtn" data-workers="24">24</button>
+    </div>
+  </div>
+
+  <div class="settingGroup">
+    <div class="settingLabel">Download Speed Limit</div>
+    <div class="settingDesc">Throttle maximum download bandwidth across workers. Unlimited mode applies no delay.</div>
+    <select id="speedLimitSelect" style="width:100%;max-width:320px;padding:10px 12px">
+      <option value="0">Unlimited / Maximum</option>
+      <option value="1">1 MB/s</option>
+      <option value="2">2 MB/s</option>
+      <option value="5">5 MB/s</option>
+      <option value="10">10 MB/s</option>
+      <option value="20">20 MB/s</option>
+      <option value="50">50 MB/s</option>
+    </select>
+  </div>
+
+  <div class="settingGroup">
+    <div class="settingLabel">Library Location</div>
+    <div class="settingDesc">Directory where manga/manhwa chapters and images are stored.</div>
+    <div id="libraryPath" style="color:var(--muted);word-break:break-all;margin-bottom:12px;font-family:monospace;font-size:13px;background:var(--bg);padding:8px 12px;border-radius:8px;border:1px solid var(--line)"></div>
+    <button id="changeFolder">Change Folder</button>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:12px;margin-top:16px">
+    <button id="saveSettingsBtn" class="primary">Save Settings</button>
+    <span id="settingsNotice" style="font-size:13px;color:var(--success)"></span>
+  </div>
 </section>
+
+<!-- Download Manager Panel -->
+<section id="downloadPanel" class="panel" style="display:none">
+  <div class="panelHeader">
+    <div class="panelTitle">📥 Download Manager</div>
+    <div style="display:flex;gap:8px">
+      <button id="clearFinished" style="font-size:12px">Clear Finished</button>
+      <button id="closeDownload">Close</button>
+    </div>
+  </div>
+
+  <div style="background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:16px;margin-bottom:18px">
+    <div style="font-weight:700;margin-bottom:10px;font-size:13px">Add Series to Download</div>
+    <input id="seriesUrl" placeholder="Paste manga/manhwa series URL (e.g. https://...)" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);outline:none;margin-bottom:10px;font-size:13px">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <input id="seriesName" placeholder="Custom name (optional — auto detected if blank)" style="flex:1;min-width:200px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);outline:none;font-size:13px">
+      <button id="startDownload" class="primary">Start Download</button>
+    </div>
+    <div id="downloadNotice" style="margin-top:10px;font-size:12px;color:var(--muted)"></div>
+  </div>
+
+  <div style="font-weight:800;font-size:14px;margin-bottom:12px">Jobs & Queue</div>
+  <div id="jobList">
+    <div style="color:var(--muted);font-size:13px;padding:12px 0">No downloads active. Enter a URL above to start.</div>
+  </div>
+</section>
+
+<!-- Library View -->
 <section id="library">
-<div id="downloadPanel" style="display:none;margin:0 0 24px;padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:14px">
-  <div style="font-size:18px;font-weight:800;margin-bottom:12px">Download Series</div>
-  <input id="seriesUrl" placeholder="Paste series URL…" style="width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--text);outline:none;margin-bottom:10px">
-  <input id="seriesName" placeholder="Name (optional — auto-detected)" style="width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--text);outline:none;margin-bottom:10px">
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-    <button id="startDownload">Download</button>
-    <button id="cancelDownload">Close</button>
-    <span id="downloadStatus" style="color:var(--muted)"></span>
-  </div>
-  <div style="height:6px;background:var(--panel2);border-radius:99px;margin-top:14px;overflow:hidden">
-    <div id="downloadProgress" style="height:100%;width:0;background:var(--accent);transition:.2s"></div>
-  </div>
-</div>
   <h1>Your Library</h1>
-  <div class="hint" id="count">Scanning…</div>
+  <div class="hint" id="count">Scanning library…</div>
   <div class="grid" id="grid"></div>
 </section>
 
+<!-- Reader View -->
 <section id="reader">
   <div class="readerTop">
     <button id="back">← Library</button>
@@ -80,256 +514,568 @@ select{padding:10px;border-radius:10px;border:1px solid var(--line);background:v
       <button id="zoomIn" aria-label="Zoom in">+</button>
     </div>
     <select id="chapterSelect"></select>
-    <button id="fullscreen">⛶</button>
+    <button id="fullscreen">⛶ Fullscreen</button>
   </div>
   <div id="pages"></div>
 </section>
 </main>
 
 <script>
-let library=[], current=null;
+let library = [];
+let current = null;
+let jobsCache = {};
+let pollTimer = null;
+let selectedWorkers = 12;
 
+// Settings Panel
+const settingsBtn = document.getElementById("settings");
+const settingsPanel = document.getElementById("settingsPanel");
+const libraryPath = document.getElementById("libraryPath");
+const changeFolder = document.getElementById("changeFolder");
+const closeSettings = document.getElementById("closeSettings");
+const speedLimitSelect = document.getElementById("speedLimitSelect");
+const saveSettingsBtn = document.getElementById("saveSettingsBtn");
+const settingsNotice = document.getElementById("settingsNotice");
+const workerPills = document.querySelectorAll("#workerPills .pillBtn");
 
+workerPills.forEach(btn => {
+  btn.onclick = () => {
+    workerPills.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    selectedWorkers = parseInt(btn.dataset.workers, 10);
+  };
+});
 
-const settingsBtn = document.getElementById('settings');
-const settingsPanel = document.getElementById('settingsPanel');
-const libraryPath = document.getElementById('libraryPath');
-const changeFolder = document.getElementById('changeFolder');
-const closeSettings = document.getElementById('closeSettings');
+async function loadSettingsUI() {
+  try {
+    const r = await fetch("/api/settings?ts=" + Date.now(), {cache: "no-store"});
+    const d = await r.json();
+    libraryPath.textContent = d.library_path || "Not configured";
+    selectedWorkers = d.download_workers || 12;
+    workerPills.forEach(b => {
+      b.classList.toggle("active", parseInt(b.dataset.workers, 10) === selectedWorkers);
+    });
+    speedLimitSelect.value = String(d.download_speed_limit || 0);
+  } catch (e) {
+    libraryPath.textContent = "Error fetching settings.";
+  }
+}
 
 settingsBtn.onclick = async () => {
-  settingsPanel.style.display = 'block';
-  const r = await fetch('/api/settings?ts=' + Date.now(), {cache:'no-store'});
-  const d = await r.json();
-  libraryPath.textContent = d.library_path;
+  settingsPanel.style.display = settingsPanel.style.display === "none" ? "block" : "none";
+  if (settingsPanel.style.display === "block") {
+    await loadSettingsUI();
+  }
 };
 
-closeSettings.onclick = () => settingsPanel.style.display = 'none';
+closeSettings.onclick = () => { settingsPanel.style.display = "none"; };
+
+saveSettingsBtn.onclick = async () => {
+  saveSettingsBtn.disabled = true;
+  settingsNotice.textContent = "Saving settings...";
+  try {
+    const payload = {
+      download_workers: selectedWorkers,
+      download_speed_limit: parseInt(speedLimitSelect.value, 10)
+    };
+    const res = await fetch("/api/settings", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      throw new Error(data.error || "Failed to save settings");
+    }
+    settingsNotice.textContent = "✓ Settings saved successfully.";
+    settingsNotice.style.color = "var(--success)";
+    setTimeout(() => { settingsNotice.textContent = ""; }, 3000);
+  } catch (err) {
+    settingsNotice.textContent = "✕ " + err.message;
+    settingsNotice.style.color = "var(--danger)";
+  } finally {
+    saveSettingsBtn.disabled = false;
+  }
+};
 
 changeFolder.onclick = async () => {
   changeFolder.disabled = true;
-  libraryPath.textContent = 'Choose a folder in the file picker…';
+  libraryPath.textContent = "Choose a folder in the file picker…";
   try {
-    const r = await fetch('/api/library-folder', {method:'POST'});
+    const r = await fetch("/api/library-folder", {method: "POST"});
     const d = await r.json();
     if (d.ok) {
       libraryPath.textContent = d.library_path;
-      await scan();
-    } else {
-      libraryPath.textContent = d.library_path;
+      await scan(true);
     }
   } finally {
     changeFolder.disabled = false;
   }
 };
 
-const addDownload = document.getElementById('addDownload');
-const downloadPanel = document.getElementById('downloadPanel');
-const startDownload = document.getElementById('startDownload');
-const cancelDownload = document.getElementById('cancelDownload');
-const seriesUrl = document.getElementById('seriesUrl');
-const seriesName = document.getElementById('seriesName');
-const downloadStatus = document.getElementById('downloadStatus');
-const downloadProgress = document.getElementById('downloadProgress');
+// Download Panel
+const addDownloadBtn = document.getElementById("addDownload");
+const downloadPanel = document.getElementById("downloadPanel");
+const closeDownload = document.getElementById("closeDownload");
+const startDownload = document.getElementById("startDownload");
+const seriesUrl = document.getElementById("seriesUrl");
+const seriesName = document.getElementById("seriesName");
+const downloadNotice = document.getElementById("downloadNotice");
+const jobList = document.getElementById("jobList");
+const clearFinishedBtn = document.getElementById("clearFinished");
 
-let activeJob = null;
-
-addDownload.onclick = () => {
-  downloadPanel.style.display = downloadPanel.style.display === 'none' ? 'block' : 'none';
-  seriesUrl.focus();
+addDownloadBtn.onclick = () => {
+  downloadPanel.style.display = downloadPanel.style.display === "none" ? "block" : "none";
+  if (downloadPanel.style.display === "block") {
+    seriesUrl.focus();
+    pollDownloads();
+  }
 };
 
-cancelDownload.onclick = () => {
-  downloadPanel.style.display = 'none';
-};
+closeDownload.onclick = () => { downloadPanel.style.display = "none"; };
 
 startDownload.onclick = async () => {
   const url = seriesUrl.value.trim();
+  const name = seriesName.value.trim();
 
   if (!url) {
-    downloadStatus.textContent = 'Enter a series URL.';
+    downloadNotice.textContent = "⚠ Please enter a series URL.";
+    downloadNotice.style.color = "var(--warning)";
     return;
   }
 
   startDownload.disabled = true;
-  downloadStatus.textContent = 'Starting...';
-  downloadProgress.style.width = '0%';
+  downloadNotice.textContent = "Submitting download job...";
+  downloadNotice.style.color = "var(--muted)";
 
   try {
-    const res = await fetch('/api/download', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        url,
-        name: seriesName.value.trim()
-      })
+    const res = await fetch("/api/download", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ url, name })
     });
-
     const data = await res.json();
 
-    if (!res.ok) throw new Error(data.error || 'Could not start download.');
+    if (!res.ok || data.error) {
+      throw new Error(data.error || "Could not queue download.");
+    }
 
-    activeJob = data.job_id;
-    pollDownload();
-  } catch (e) {
-    downloadStatus.textContent = e.message;
+    downloadNotice.textContent = data.is_existing ? "ℹ Series is already in queue or active." : "✓ Download queued successfully.";
+    downloadNotice.style.color = "var(--success)";
+    seriesUrl.value = "";
+    seriesName.value = "";
+    await pollDownloads();
+  } catch (err) {
+    downloadNotice.textContent = "✕ " + err.message;
+    downloadNotice.style.color = "var(--danger)";
+  } finally {
     startDownload.disabled = false;
   }
 };
 
-async function pollDownload() {
-  if (!activeJob) return;
-
+clearFinishedBtn.onclick = async () => {
   try {
-    const res = await fetch('/api/downloads?ts=' + Date.now(), {
-      cache: 'no-store'
+    await fetch("/api/download/clear", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({})
     });
+    await pollDownloads();
+  } catch (e) {}
+};
 
+async function cancelJob(jobId) {
+  try {
+    await fetch("/api/download/cancel", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ job_id: jobId })
+    });
+    await pollDownloads();
+  } catch (e) {}
+}
+
+async function retryJob(jobId) {
+  try {
+    await fetch("/api/download/retry", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ job_id: jobId })
+    });
+    await pollDownloads();
+  } catch (e) {}
+}
+
+async function dismissJob(jobId) {
+  try {
+    await fetch("/api/download/clear", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ job_id: jobId })
+    });
+    await pollDownloads();
+  } catch (e) {}
+}
+
+function formatBytes(bytes) {
+  if (!bytes || bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+}
+
+function formatSpeed(bps) {
+  if (!bps || bps <= 0) return "0 MB/s";
+  const mbps = bps / (1024 * 1024);
+  if (mbps >= 1) return mbps.toFixed(1) + " MB/s";
+  const kbps = bps / 1024;
+  return kbps.toFixed(0) + " KB/s";
+}
+
+function renderJobs(jobs) {
+  const jobIds = Object.keys(jobs);
+  if (!jobIds.length) {
+    jobList.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:12px 0">No downloads active. Enter a URL above to start.</div>`;
+    return;
+  }
+
+  let html = "";
+  const order = { "downloading": 1, "detecting": 2, "fetching": 3, "starting": 4, "queued": 5, "failed": 6, "cancelled": 7, "completed": 8 };
+  const sorted = Object.values(jobs).sort((a, b) => (order[a.status] || 99) - (order[b.status] || 99));
+
+  sorted.forEach(j => {
+    const isRunning = ["starting", "detecting", "fetching", "downloading"].includes(j.status);
+    const isQueued = j.status === "queued";
+    const isCompleted = j.status === "completed";
+    const isFailed = j.status === "failed";
+    const isCancelled = j.status === "cancelled";
+
+    let actions = "";
+    if (isRunning || isQueued) {
+      actions = `<button class="danger" style="padding:4px 9px;font-size:11px" onclick="cancelJob('${j.job_id}')">Cancel</button>`;
+    } else if (isFailed || isCancelled) {
+      actions = `
+        <button class="primary" style="padding:4px 9px;font-size:11px" onclick="retryJob('${j.job_id}')">Retry</button>
+        <button style="padding:4px 9px;font-size:11px" onclick="dismissJob('${j.job_id}')">Dismiss</button>
+      `;
+    } else if (isCompleted) {
+      actions = `
+        <button class="primary" style="padding:4px 9px;font-size:11px" onclick="openMangaByName('${encodeURIComponent(j.series_name)}')">Open</button>
+        <button style="padding:4px 9px;font-size:11px" onclick="dismissJob('${j.job_id}')">Dismiss</button>
+      `;
+    }
+
+    const chStr = j.total_chapters > 0 ? `Chapter ${j.completed_chapters || 0} / ${j.total_chapters}` : "";
+
+    html += `
+      <div class="jobCard">
+        <div class="jobTop">
+          <div class="jobName" title="${j.series_name}">${j.series_name}</div>
+          <span class="jobBadge badge-${j.status}">${j.status}</span>
+          <div>${actions}</div>
+        </div>
+
+        ${isRunning ? `
+          <div class="progressBarBg">
+            <div class="progressBar" style="width:${j.progress}%"></div>
+          </div>
+          <div class="statsGrid">
+            <div class="statItem">
+              <span class="statLabel">Progress</span>
+              <span class="statValue">${j.progress}% ${chStr ? `· ${chStr}` : ""}</span>
+            </div>
+            <div class="statItem">
+              <span class="statLabel">Speed</span>
+              <span class="statValue">${formatSpeed(j.speed_bps)}</span>
+            </div>
+            <div class="statItem">
+              <span class="statLabel">Workers</span>
+              <span class="statValue">${j.workers || 12}</span>
+            </div>
+            <div class="statItem">
+              <span class="statLabel">Downloaded</span>
+              <span class="statValue">${formatBytes(j.downloaded_bytes)}</span>
+            </div>
+          </div>
+        ` : ""}
+
+        <div class="jobDetails">
+          <span>${j.message || j.status}</span>
+          <span>${isRunning ? (j.current_chapter || "") : j.created_at}</span>
+        </div>
+      </div>
+    `;
+  });
+
+  jobList.innerHTML = html;
+}
+
+let hadActiveJobs = false;
+
+async function pollDownloads() {
+  try {
+    const res = await fetch("/api/downloads?ts=" + Date.now(), {cache: "no-store"});
+    if (!res.ok) return;
     const jobs = await res.json();
-    const job = jobs[activeJob];
+    jobsCache = jobs;
+    renderJobs(jobs);
 
-    if (!job) return;
+    const hasActive = Object.values(jobs).some(j => ["queued", "starting", "detecting", "fetching", "downloading"].includes(j.status));
 
-    downloadProgress.style.width = (job.progress || 0) + '%';
-    downloadStatus.textContent = job.message || job.status;
-
-    if (job.status === 'complete') {
-      startDownload.disabled = false;
-      downloadStatus.textContent = '✓ Download complete';
-      seriesUrl.value = '';
-      seriesName.value = '';
-      setTimeout(scan, 500);
-      return;
+    if (hadActiveJobs && !hasActive) {
+      scan(true);
     }
+    hadActiveJobs = hasActive;
 
-    if (job.status === 'error') {
-      startDownload.disabled = false;
-      downloadStatus.textContent = '✕ ' + job.message;
-      return;
-    }
-
-    setTimeout(pollDownload, 700);
+    clearTimeout(pollTimer);
+    pollTimer = setTimeout(pollDownloads, hasActive ? 800 : 4000);
   } catch (e) {
-    downloadStatus.textContent = 'Download status unavailable.';
-    setTimeout(pollDownload, 1500);
+    clearTimeout(pollTimer);
+    pollTimer = setTimeout(pollDownloads, 4000);
   }
 }
 
-async function scan(){
-  const res=await fetch('/api/library?ts='+Date.now(),{cache:'no-store'});
-  if(!res.ok) throw new Error('Server error');
-  library=await res.json();
-  try { const s=await fetch('/api/settings?ts='+Date.now(),{cache:'no-store'}); const d=await s.json(); document.getElementById('path').textContent=d.library_path; } catch(e) {}
-  renderLibrary();
+// Library Management
+async function scan(force = false) {
+  try {
+    const res = await fetch("/api/library?ts=" + Date.now(), {cache: "no-store"});
+    if (!res.ok) throw new Error("Server response error");
+    library = await res.json();
+
+    try {
+      const s = await fetch("/api/settings?ts=" + Date.now(), {cache: "no-store"});
+      const d = await s.json();
+      document.getElementById("path").textContent = d.library_path || "";
+    } catch (e) {}
+
+    renderLibrary();
+  } catch (e) {
+    document.getElementById("count").textContent = "Could not connect to the library server.";
+  }
 }
 
-function renderLibrary(){
-  const q=document.getElementById('search').value.toLowerCase().trim();
-  const list=library.filter(x=>x.name.toLowerCase().includes(q));
-  document.getElementById('count').textContent=`${list.length} folder${list.length!==1?'s':''} detected · updates automatically`;
-  const grid=document.getElementById('grid'); grid.innerHTML='';
-  if(!list.length){grid.innerHTML='<div class="empty">No folders found.</div>';return}
-  list.forEach(item=>{
-    const card=document.createElement('div'); card.className='card';
-    card.innerHTML=`<div class="icon">📁</div><div class="title"></div><div class="meta">${item.chapters} chapter${item.chapters!==1?'s':''} · ${item.pages} pages</div>`;
-    card.querySelector('.title').textContent=item.name;
-    card.onclick=()=>openManga(item);
+function renderLibrary() {
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  const list = library.filter(x => x.name.toLowerCase().includes(q));
+  document.getElementById("count").textContent = `${list.length} folder${list.length !== 1 ? "s" : ""} in library`;
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty">No manga folders found. Click "＋ Download" to add series.</div>`;
+    return;
+  }
+
+  list.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <button class="cardDelete" title="Delete folder" aria-label="Delete folder">🗑️</button>
+      <div class="icon">📁</div>
+      <div class="title"></div>
+      <div class="meta">${item.chapters} chapter${item.chapters !== 1 ? "s" : ""} · ${item.pages} pages</div>
+    `;
+    card.querySelector(".title").textContent = item.name;
+
+    const delBtn = card.querySelector(".cardDelete");
+    delBtn.onclick = async (e) => {
+      e.stopPropagation();
+      if (!confirm(`Are you sure you want to delete "${item.name}" and all its contents?`)) {
+        return;
+      }
+      delBtn.disabled = true;
+      delBtn.textContent = "…";
+      try {
+        const res = await fetch("/api/delete-folder", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ name: item.name })
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) {
+          throw new Error(data.error || "Failed to delete folder");
+        }
+        await scan(true);
+      } catch (err) {
+        alert("Delete failed: " + err.message);
+        delBtn.disabled = false;
+        delBtn.textContent = "🗑️";
+      }
+    };
+
+    card.onclick = () => openManga(item);
     grid.appendChild(card);
   });
 }
 
-const ZOOM_KEY='manwa-reader-zoom';
+// Zoom & Reader
+const ZOOM_KEY = "manwa-reader-zoom";
 let zoom = Number(localStorage.getItem(ZOOM_KEY)) || 100;
 zoom = Math.min(150, Math.max(50, zoom));
 
-function applyZoom(){
-  document.querySelectorAll('.page').forEach(img=>{
-    img.style.width = zoom + '%';
-    // Keep the image centered when it becomes wider than its reader area.
-    // At 140%, for example, shift it left by 20% so the extra 40%
-    // is distributed evenly on both sides.
-    img.style.marginLeft = ((100 - zoom) / 2) + '%';
-    img.style.marginRight = '0';
+function applyZoom() {
+  document.querySelectorAll(".page").forEach(img => {
+    img.style.width = zoom + "%";
+    img.style.marginLeft = ((100 - zoom) / 2) + "%";
+    img.style.marginRight = "0";
   });
-  document.getElementById('zoomValue').textContent = zoom + '%';
+  document.getElementById("zoomValue").textContent = zoom + "%";
   localStorage.setItem(ZOOM_KEY, String(zoom));
 }
 
-document.getElementById('zoomIn').onclick=()=>{
-  zoom=Math.min(150,zoom+10);
+document.getElementById("zoomIn").onclick = () => {
+  zoom = Math.min(150, zoom + 10);
   applyZoom();
 };
-document.getElementById('zoomOut').onclick=()=>{
-  zoom=Math.max(50,zoom-10);
+document.getElementById("zoomOut").onclick = () => {
+  zoom = Math.max(50, zoom - 10);
   applyZoom();
 };
 
 applyZoom();
 
-async function openManga(item){
-  const res=await fetch('/api/manga/'+encodeURIComponent(item.name)+'?ts='+Date.now(),{cache:'no-store'});
-  current=await res.json();
-  document.getElementById('library').style.display='none';
-  document.getElementById('reader').style.display='block';
-  document.getElementById('readerTitle').textContent=current.name;
-  const sel=document.getElementById('chapterSelect'); sel.innerHTML='';
-  current.chapters.forEach((c,i)=>{let o=document.createElement('option');o.value=i;o.textContent=`${c.name} · ${c.pages} pages`;sel.appendChild(o)});
-  sel.onchange=()=>loadChapter(+sel.value);
-  loadChapter(0);
-  scrollTo(0,0);
+async function openMangaByName(encodedName) {
+  const name = decodeURIComponent(encodedName);
+  downloadPanel.style.display = "none";
+  openManga({ name });
 }
 
-function loadChapter(i){
-  const c=current.chapters[i], box=document.getElementById('pages');
-  document.getElementById('chapterSelect').value=i; box.innerHTML='';
-  c.files.forEach((file,n)=>{
-    const img=document.createElement('img');img.className='page';img.loading=n<2?'eager':'lazy';
-    img.src='/file/'+encodeURIComponent(current.name)+'/'+c.path.split('/').map(encodeURIComponent).join('/')+'/'+encodeURIComponent(file);
-    img.alt=`${c.name} page ${n+1}`; box.appendChild(img);
+async function openManga(item) {
+  try {
+    const res = await fetch("/api/manga/" + encodeURIComponent(item.name) + "?ts=" + Date.now(), {cache: "no-store"});
+    if (!res.ok) throw new Error("Could not load manga");
+    current = await res.json();
+
+    if (!current.chapters || !current.chapters.length) {
+      alert(`No readable chapters found in "${item.name}".`);
+      return;
+    }
+
+    document.getElementById("library").style.display = "none";
+    document.getElementById("reader").style.display = "block";
+    document.getElementById("readerTitle").textContent = current.name;
+
+    const sel = document.getElementById("chapterSelect");
+    sel.innerHTML = "";
+    current.chapters.forEach((c, i) => {
+      let o = document.createElement("option");
+      o.value = i;
+      o.textContent = `${c.name} · ${c.pages} pages`;
+      sel.appendChild(o);
+    });
+
+    sel.onchange = () => loadChapter(+sel.value);
+    loadChapter(0);
+    scrollTo(0, 0);
+  } catch (err) {
+    alert("Error opening manga: " + err.message);
+  }
+}
+
+function loadChapter(i) {
+  if (!current || !current.chapters || !current.chapters[i]) return;
+  const c = current.chapters[i];
+  const box = document.getElementById("pages");
+  document.getElementById("chapterSelect").value = i;
+  box.innerHTML = "";
+
+  c.files.forEach((file, n) => {
+    const img = document.createElement("img");
+    img.className = "page";
+    img.loading = n < 2 ? "eager" : "lazy";
+    img.src = "/file/" + encodeURIComponent(current.name) + "/" + c.path.split("/").map(encodeURIComponent).join("/") + "/" + encodeURIComponent(file);
+    img.alt = `${c.name} page ${n + 1}`;
+    box.appendChild(img);
   });
 
-  const nav=document.createElement('div');
-  nav.className='chapterNav';
+  const nav = document.createElement("div");
+  nav.className = "chapterNav";
 
-  if(i>0){
-    const prev=document.createElement('button');
-    prev.textContent='← Previous Chapter';
-    prev.onclick=()=>loadChapter(i-1);
+  if (i > 0) {
+    const prev = document.createElement("button");
+    prev.textContent = "← Previous Chapter";
+    prev.onclick = () => loadChapter(i - 1);
     nav.appendChild(prev);
   }
 
-  if(i<current.chapters.length-1){
-    const next=document.createElement('button');
-    next.className='next';
-    next.textContent='Next Chapter →';
-    next.onclick=()=>loadChapter(i+1);
+  if (i < current.chapters.length - 1) {
+    const next = document.createElement("button");
+    next.className = "next primary";
+    next.textContent = "Next Chapter →";
+    next.onclick = () => loadChapter(i + 1);
     nav.appendChild(next);
-  }else{
-    const end=document.createElement('button');
-    end.className='next';
-    end.textContent='✓ End of Manga';
-    end.disabled=true;
+  } else {
+    const end = document.createElement("button");
+    end.className = "next";
+    end.textContent = "✓ End of Manga";
+    end.disabled = true;
     nav.appendChild(end);
   }
 
   box.appendChild(nav);
   applyZoom();
-  scrollTo({top:0,behavior:'smooth'});
+  scrollTo({top: 0, behavior: "smooth"});
 }
 
-document.getElementById('back').onclick=()=>{document.getElementById('reader').style.display='none';document.getElementById('library').style.display='block';current=null;scrollTo(0,0)};
-document.getElementById('refresh').onclick=scan;
-document.getElementById('search').oninput=renderLibrary;
-document.getElementById('fullscreen').onclick=()=>document.documentElement.requestFullscreen?.();
-window.onkeydown=e=>{
- if(!current)return;
- if(e.key==='Escape'){document.getElementById('back').click()}
- if(e.key==='ArrowRight'){let s=document.getElementById('chapterSelect');if(+s.value<s.options.length-1){s.value=+s.value+1;loadChapter(+s.value)}}
- if(e.key==='ArrowLeft'){let s=document.getElementById('chapterSelect');if(+s.value>0){s.value=+s.value-1;loadChapter(+s.value)}}
+document.getElementById("back").onclick = () => {
+  document.getElementById("reader").style.display = "none";
+  document.getElementById("library").style.display = "block";
+  current = null;
+  scrollTo(0, 0);
+  scan(true);
 };
-window.onscroll=()=>{let m=document.documentElement.scrollHeight-innerHeight;document.getElementById('progress').style.width=m>0?(scrollY/m*100)+'%':'0%'};
-scan().catch(e=>document.getElementById('count').textContent='Could not connect to the library server.');
-setInterval(scan,5000);
+
+const refreshBtn = document.getElementById("refresh");
+refreshBtn.onclick = async () => {
+  refreshBtn.disabled = true;
+  const origText = refreshBtn.innerHTML;
+  refreshBtn.innerHTML = "↻ Refreshing…";
+  try {
+    await scan(true);
+    await pollDownloads();
+  } finally {
+    refreshBtn.innerHTML = origText;
+    refreshBtn.disabled = false;
+  }
+};
+
+document.getElementById("search").oninput = renderLibrary;
+document.getElementById("fullscreen").onclick = () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen?.();
+  } else {
+    document.exitFullscreen?.();
+  }
+};
+
+window.onkeydown = e => {
+  if (!current) return;
+  if (e.key === "Escape") { document.getElementById("back").click(); }
+  if (e.key === "ArrowRight") {
+    let s = document.getElementById("chapterSelect");
+    if (+s.value < s.options.length - 1) {
+      s.value = +s.value + 1;
+      loadChapter(+s.value);
+    }
+  }
+  if (e.key === "ArrowLeft") {
+    let s = document.getElementById("chapterSelect");
+    if (+s.value > 0) {
+      s.value = +s.value - 1;
+      loadChapter(+s.value);
+    }
+  }
+};
+
+window.onscroll = () => {
+  let m = document.documentElement.scrollHeight - innerHeight;
+  document.getElementById("progress").style.width = m > 0 ? (scrollY / m * 100) + "%" : "0%";
+};
+
+// Initial Start
+scan();
+pollDownloads();
 </script>
 </body>
 </html>

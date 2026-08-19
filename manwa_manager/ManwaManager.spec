@@ -13,7 +13,19 @@ else:
 
 binaries = []
 datas = [(os.path.join(SPEC_DIR, "index.html"), ".")]
-hiddenimports = ["tkinter", "bs4", "PIL", "curl_cffi"]
+hiddenimports = [
+    "tkinter",
+    "tkinter.filedialog",
+    "bs4",
+    "PIL",
+    "PIL.Image",
+    "PIL.PngImagePlugin",
+    "PIL.JpegImagePlugin",
+    "PIL.WebPImagePlugin",
+    "PIL.GifImagePlugin",
+    "curl_cffi",
+    "curl_cffi.requests",
+]
 
 for pkg in ["curl_cffi", "bs4", "PIL"]:
     try:
@@ -21,8 +33,8 @@ for pkg in ["curl_cffi", "bs4", "PIL"]:
         binaries += b
         datas += d
         hiddenimports += h
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Notice: collect_all for {pkg}: {e}")
 
 block_cipher = None
 

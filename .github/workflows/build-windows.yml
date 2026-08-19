@@ -61,6 +61,11 @@ jobs:
             --noconfirm ^
             --onefile ^
             --name ManwaManager-Windows-x86 ^
+            --collect-all curl_cffi ^
+            --collect-all PIL ^
+            --collect-all bs4 ^
+            --hidden-import tkinter ^
+            --hidden-import tkinter.filedialog ^
             --add-data "index.html;." ^
             app.py
 

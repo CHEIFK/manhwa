@@ -24,8 +24,10 @@ if ! command -v appimagetool >/dev/null 2>&1; then
   elif [ -x "/tmp/appimagetool" ]; then
     APPIMAGETOOL="/tmp/appimagetool"
   else
-    echo "appimagetool not found in PATH or locally. Download it from https://github.com/AppImage/appimagetool/releases"
-    exit 1
+    echo "Downloading appimagetool..."
+    wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -O /tmp/appimagetool || curl -sL https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -o /tmp/appimagetool
+    chmod +x /tmp/appimagetool
+    APPIMAGETOOL="/tmp/appimagetool"
   fi
 else
   APPIMAGETOOL="appimagetool"
